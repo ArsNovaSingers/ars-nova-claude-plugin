@@ -1,6 +1,6 @@
 {
   "name": "ars-nova",
-  "version": "1.1.0",
-  "description": "Ars Nova Claude Plugin — the team's Season PM / Dashboard Connector, per-person Project Secretary, the Task Runner (execute a season task end-to-end), the SOP Writer (capture how-we-do-things into the Operations SOP Library), and future Ars Nova skills + MCP connectors.",
+  "version": "1.2.0",
+  "description": "Ars Nova Claude Plugin — the team's Season PM / Dashboard Connector, per-person Project Secretary, Task Runner (execute a season task end-to-end), SOP Writer (capture how-we-do-things into the Operations SOP Library), Plugin Publisher (ship skills/updates to this repo), and future Ars Nova skills + MCP connectors.",
   "author": { "name": "Ars Nova Singers", "email": "jon@arsnovasingers.org" }
 }
