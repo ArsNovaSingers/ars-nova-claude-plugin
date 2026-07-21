@@ -1,0 +1,16 @@
+{
+  "name": "ars-nova",
+  "owner": {
+    "name": "Ars Nova Singers",
+    "email": "jon@arsnovasingers.org"
+  },
+  "description": "Ars Nova Singers internal Claude skills and connectors.",
+  "plugins": [
+    {
+      "name": "ars-nova",
+      "source": "./plugins/ars-nova",
+      "description": "Ars Nova Claude Plugin 1.0 — Season PM / Dashboard Connector and per-person Project Secretary (plus future Ars Nova skills and MCP connectors).",
+      "version": "1.0.0"
+    }
+  ]
+}
