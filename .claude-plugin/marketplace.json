@@ -6,8 +6,8 @@
     {
       "name": "ars-nova",
       "source": "./plugins/ars-nova",
-      "description": "Ars Nova Claude Plugin — Season PM / Dashboard Connector, per-person Project Secretary, Task Runner, SOP Writer, and Plugin Publisher, plus future Ars Nova skills and MCP connectors.",
-      "version": "1.2.0"
+      "description": "Ars Nova Claude Plugin — Season PM / Dashboard Connector, per-person Project Secretary, Task Runner, SOP Writer, Plugin Publisher, and Wiki Lint, plus future Ars Nova skills and MCP connectors.",
+      "version": "1.3.0"
     }
   ]
 }
