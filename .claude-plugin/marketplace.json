@@ -1,13 +1,16 @@
 {
   "name": "ars-nova",
-  "owner": { "name": "Ars Nova Singers", "email": "jon@arsnovasingers.org" },
+  "owner": {
+    "name": "Ars Nova Singers",
+    "email": "jon@arsnovasingers.org"
+  },
   "description": "Ars Nova Singers internal Claude skills and connectors.",
   "plugins": [
     {
       "name": "ars-nova",
       "source": "./plugins/ars-nova",
-      "description": "Ars Nova Claude Plugin — Season PM / Dashboard Connector, per-person Project Secretary, Task Runner, SOP Writer, Plugin Publisher, and Wiki Lint, plus future Ars Nova skills and MCP connectors.",
-      "version": "1.3.0"
+      "description": "Ars Nova Claude Plugin — Season PM / Dashboard Connector, per-person Project Secretary, Task Runner, SOP Writer, Plugin Publisher, Wiki Lint, Kinsta Ops, and Marketing Project Builder, plus future Ars Nova skills and MCP connectors.",
+      "version": "1.5.0"
     }
   ]
 }
