@@ -23,12 +23,14 @@ Ars Nova connectors only, as your own @arsnovasingers.org identity. Never `aromi
 
 ## The source of truth
 `claude/marketing/Marketing_Action_Items_Template_2026-09-15.md` (mirror) and the Google Doc
-**Marketing Action Items Template** in the ROOT of the Ars Nova Projects shared drive. Locate it
-by name rather than by a stored id. Read it before building — it changes as the team learns, and
+**Marketing Action Items Template** in Ars Nova Projects → **Marketing Playbook** (it lived in the
+drive root until 2026-09-21). Locate it by name rather than by a stored id. Read it before building — it changes as the team learns, and
 the phases below are its headings, not a second list to maintain.
 
 Outlets, named editors, eligibility and lead times live in the **Concert Listing Calendars
-Submission Tracker** in the same Drive root — Calendars, Press Contacts and Strategy tabs.
+Submission Tracker**, in the same Marketing Playbook folder — Calendars, Press Contacts, Strategy
+and Submission Log tabs. To actually work the calendar listings, hand off to
+**`ans-calendar-listings`**; this skill builds the board, that one runs the submissions.
 
 ## Mode 1 — Build a board
 
