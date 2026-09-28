@@ -66,6 +66,11 @@ The Strategy tab specifies exactly this, and none of it is optional:
 - Date, start time, venue name and full address — per performance
 - Ticket price and ticket URL
 - A **50-word** description and a **150-word** description
+- **One listing = one performance.** Each city's form gets a description naming only that
+  performance's date, time and venue (the livestream is mentioned only on the date that is
+  streamed). Never put all three dates in one description: calendar editors treat a
+  listing as a single event and do not know what to do with a three-city blurb. Write the
+  shared programme paragraph once, then end it with the one performance line per outlet.
 - One landscape image at **1200x815** and one at **450x300** — two different files.
   Visit Denver recommends 1200x815; Visit Longmont wants 450x300. The Visit Boulder /
   Denver / Longmont forms accept only .jpg/.jpeg/.png **under 750 KB**.
@@ -179,7 +184,13 @@ that reaches real people.
 - **Visit Boulder / VISIT DENVER / Visit Longmont** run the same Simpleview form
   (fields `title`, `startdate`, `starttime`, `location`, `addr1`, `city`, `zip`,
   `admission`, `email`, `linkurl`, `description`, `categories`, `primarycatId`,
-  `postname`, `postemail`). Values can be set with a page script. Visit Longmont adds
+  `postname`, `postemail`). Values can be set with a page script.
+  **Check the date section on every one of these forms.** VISIT DENVER opens with its
+  repeat setting on **Custom** (`recurtype` 99) and an empty custom-date list, which would
+  submit an event with no date. Open the Custom panel, click the date box, pick the date
+  from the **calendar popup** (typing it gives "Invalid Date"), click **add date**, and
+  confirm the date and weekday appear in the list. Verify with the hidden
+  `customdates_hiddeninput` field, which must hold the date. Visit Longmont adds
   "Do you have permission to use this image?" — answer **Yes** for Ars Nova's own
   artwork.
 - **What's Happenin'** (Boulder / Denver / Longmont editions, one form each) blocks
