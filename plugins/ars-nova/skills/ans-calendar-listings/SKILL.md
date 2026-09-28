@@ -179,6 +179,54 @@ that reaches real people.
   "Permission denied by user" result means that prompt was declined or timed out. Ask
   Jonathan to click Allow, then retry once. Do not loop.
 
+#### Contact, host and social fields — every form, no exceptions
+
+- **Submitter and every email field: info@arsnovasingers.org.** Not a personal address.
+- **Public phone: the office line, 303-499-3165.** Submitter phone may be Jonathan's
+  (720-341-6376) where a form asks for one privately.
+- **Never enter Kim's name, phone or email on any listing** — not as submitter, not as
+  event contact. Standing rule from Jonathan.
+- **Host organization:** fill **Other Host Organization: Ars Nova Singers** (Ars Nova is not
+  in the Visit sites' member dropdowns). Link the venue from the site's own venue list when it
+  is there (VISIT DENVER lists St. Paul at 1600 Grant as "St. Paul Lutheran and Catholic
+  Community of Faith").
+- **Social fields:** Facebook https://www.facebook.com/arsnovasingers, Instagram
+  @arsnovasingers. No Twitter/X account exists; leave it blank. Pinterest: blank until SOC-5
+  creates the account. The site footer is the source of truth for official accounts
+  (Facebook, Instagram, YouTube channel UCzO5rQsXNYLrBT9gfGOKoEw, Spotify artist
+  4XELRDZAJUKCIqYB9zno1w).
+
+#### Dates on the Visit Boulder / Denver / Longmont forms
+
+Point and click. For a single performance choose **One Day** with the start date (the form
+itself says so), or, where the form opens on **Custom**, open the custom date box at the
+bottom, **click the date in its calendar**, click **Add Date**, and see the date and weekday
+appear in the list. Do not type dates into the custom box.
+
+#### Submitting
+
+The real **Submit My Event** button is the one at the very bottom, below the date section.
+Some pages carry a second, earlier button reference that does nothing — scroll to the bottom
+and click the one you can see. Success is a separate Thank You page; no thank-you means it
+did not go.
+
+#### Browser setup
+
+Run listings in a **Claude-only Chrome profile with no password manager or other
+extensions.** A password manager draws a frame over sites with email fields (What's
+Happenin'), and Chrome then blocks every click and script. Uploads and screenshots only work
+on the tab in front of the focused window, so close each finished tab to bring the next
+forward.
+
+#### Image — fastest route
+
+Upload the listing image once to the LIVE WordPress media library (over SSH:
+`scp` to /tmp, then `wp media import` with the siteurl guard — see
+claude/infra/Kinsta_Environments_and_SSH.md). Each form's page script can then fetch it
+from arsnovasingers.org and hand it to the form's own uploader input (`multifilectrl` on the
+Visit forms); the upload list shows **Complete**. No Windows file picker needed. The
+file-picker method below is the fallback.
+
 #### Filling
 
 - **Visit Boulder / VISIT DENVER / Visit Longmont** run the same Simpleview form
