@@ -1,6 +1,6 @@
 ---
 name: ans-calendar-listings
-description: List an Ars Nova concert across every community calendar, listing site and music platform in one run — builds the asset pack from live Tickera data, files each web form in Chrome (including the image upload via the Windows file picker), submits on one named "go", and logs what landed where. Covers calendars only, never press contacts.
+description: List an Ars Nova concert across every community calendar, listing site and music platform in one run — builds the asset pack from live Tickera data, files each web form with Playwright (a headless browser on PULSE) by default, submits on one named "go", and logs what landed where. Covers calendars only, never press contacts.
 ---
 
 # Ars Nova — Concert Calendar Listings
@@ -153,7 +153,34 @@ Column O tags each outlet. Run in this order.
 - **Colorado.com** — the partner account needs human approval; allow 2+ weeks. Start it
   early or accept that it misses the date.
 
-### form — Claude in Chrome
+### form — Playwright on PULSE (DEFAULT)
+
+**Use Playwright for every web form.** Installed 2026-09-28 on PULSE (`python -m pip install
+--user playwright` + `python -m playwright install chromium`; v1.63). It is its own clean
+Chromium: no password manager, no extensions, no window focus, and no Windows file picker —
+`set_input_files()` attaches the image straight from disk. The three What's Happenin'
+editions took under two minutes this way after an hour of fighting the Chrome extension.
+
+How to run it: write a small Python script under
+`C:\Users\jonra\Claud Projects\Ars Nova\scratch\listing-images\` and run it through
+Desktop Commander (`start_process`, `powershell.exe`). The reference script is
+`wh_submit.py` in that folder (What's Happenin' ×3). Pattern:
+
+1. **Inspect first, read-only:** open the form headless, dump every input/select/textarea
+   with its name, label, type and options, and screenshot it. Map fields from that — never
+   guess field names.
+2. **One performance per submission,** looping over the events; accept only essential cookies;
+   never tick paid "feature this event" upsells.
+3. **Run one outlet first** and confirm the success check reads the site's real confirmation
+   text; then run the rest.
+4. **Stop on the first failure** so nothing is submitted twice.
+5. **Save a confirmation screenshot** per submission into the concert's project folder under
+   `Calendar listing confirmations\`, and log each one on the Local PM phase ticket.
+
+The Chrome-extension method below is the **fallback only** — for forms behind a login that
+exists only in Jonathan's Chrome, or when a human must watch the page.
+
+### form — Claude in Chrome (fallback)
 
 **Approval, done once.** Copy approval comes from Kim (the "listing N of 9" emails). File
 the same day she approves — in September 2026 all nine R&S listings were approved on
@@ -323,8 +350,11 @@ window instead of submitting into a closed door.
 
 - **CPR Classical:** the old submit-event address now redirects to a directory page with
   no submission form. Find the current route or mark `N/A — no public form`.
-- **Denver Life Magazine:** the extension's site prompt was declined on first visit;
-  needs Allow before the form can be reached.
+- **Denver Life Magazine:** unreachable through the Chrome extension on 2026-09-28 (site prompt
+  declined); retry it with Playwright.
+- **What's Happenin':** free, human-reviewed listings; approval notice goes to the submitter
+  email. Paid "Featured Event" upsell ($149 / $249 / $449) — leave off unless the budget holder
+  says yes.
 
 ## Verified corrections — do not undo these
 
