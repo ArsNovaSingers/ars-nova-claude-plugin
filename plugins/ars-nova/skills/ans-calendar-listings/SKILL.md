@@ -1,6 +1,6 @@
 ---
 name: ans-calendar-listings
-description: List an Ars Nova concert across every community calendar, listing site and music platform in one run — builds the asset pack from live Tickera data, works the outlets in priority order with a confirm before each submit, and logs what landed where. Covers calendars only, never press contacts.
+description: List an Ars Nova concert across every community calendar, listing site and music platform in one run — builds the asset pack from live Tickera data, files each web form in Chrome (including the image upload via the Windows file picker), submits on one named "go", and logs what landed where. Covers calendars only, never press contacts.
 ---
 
 # Ars Nova — Concert Calendar Listings
@@ -67,7 +67,30 @@ The Strategy tab specifies exactly this, and none of it is optional:
 - Ticket price and ticket URL
 - A **50-word** description and a **150-word** description
 - One landscape image at **1200x815** and one at **450x300** — two different files.
-  Visit Denver hard-validates 1200x815; Visit Longmont wants 450x300.
+  Visit Denver recommends 1200x815; Visit Longmont wants 450x300. The Visit Boulder /
+  Denver / Longmont forms accept only .jpg/.jpeg/.png **under 750 KB**.
+
+### Which image
+
+Use the concert's **mailer front** (preferred: artwork plus title, guest artist and
+dates, so a calendar browser gets the whole message) or the **poster**. Before choosing,
+check the artwork against the concert's facts: the Rivers & Streams poster photo shows
+Nicolò Spera with a ten-string guitar, which is wrong for that programme, so the mailer
+front was used instead. Never use a bare-artwork file when a titled one exists.
+
+To make the listing file from the press PDF (on PULSE, Python + PyMuPDF + Pillow):
+render page 1 at 200 dpi, resize to the target width, **trim the 1/8-inch print bleed**
+(a 630x414 pt page is 8.75x5.75 in; the trim is width x 9/630 px per side), save JPEG
+quality ~86. The press PDFs live in Ars Nova Projects → the season folder → Season
+Graphics → Ad Graphics → Mailers.
+
+### Where created artwork goes — always
+
+Every image produced for listings is **copied into the concert's own project folder** in
+the Ars Nova Projects shared drive (e.g. `H:\Shared drives\Ars Nova Projects\2026-2027\
+1  October 2026 - Rivers and Streams with Nicolò Spera\`), named
+`<Concert>-<source>-<WxH>.jpg`. Scratch copies under `C:\Users\jonra\Claud Projects\`
+are working files only. Jonathan's standing rule; never leave the only copy in scratch.
 
 Append `?utm_source=<outlet>&utm_medium=listing&utm_campaign=<concert-slug>` to the
 ticket URL wherever a query string survives, so the channel is measurable afterwards.
@@ -125,14 +148,79 @@ Column O tags each outlet. Run in this order.
 - **Colorado.com** — the partner account needs human approval; allow 2+ weeks. Start it
   early or accept that it misses the date.
 
-### form — Claude in Chrome, with a confirm before each submit
+### form — Claude in Chrome
 
-Fill the form from the asset pack, then **show the filled form and wait for a yes before
-submitting**. One outlet at a time, never batch-submitted.
+**Approval, done once.** Copy approval comes from Kim (the "listing N of 9" emails). File
+the same day she approves — in September 2026 all nine R&S listings were approved on
+Sep 24 and then sat unfiled for three days while the concert crept inside two weeks.
+Submission approval comes from Jonathan as **one "go" covering a named list of outlets**.
+Then work them one at a time, in order, without re-asking between forms:
+fill → upload image → submit → confirm the thank-you message is visible → log it.
+Stop and ask only if something is off (validation error, wrong city, CAPTCHA).
 
-Load the browser tools in a single ToolSearch call. Take a fresh screenshot immediately
-before any click near a submit button — a stale coordinate has published something
-prematurely before, and on a followed artist page that reaches real people.
+Take a fresh screenshot immediately before any click near a submit button — a stale
+coordinate has published something prematurely before, and on a followed artist page
+that reaches real people.
+
+#### Protect the tabs — filled forms are lost on navigate or reload
+
+- **One tab per outlet.** To visit anything else, `tabs_create_mcp` a new tab first.
+  Never `navigate` a tab that holds a filled form — that wiped the Visit Boulder form
+  once. Never reload.
+- **Check state read-only.** Use `find` / `get_page_text` / a read-only script. If a
+  tab's ID has changed since you last looked, it was reopened: treat it as empty until
+  you have checked its fields.
+- **First visit to a site triggers the extension's site-approval prompt.** A
+  "Permission denied by user" result means that prompt was declined or timed out. Ask
+  Jonathan to click Allow, then retry once. Do not loop.
+
+#### Filling
+
+- **Visit Boulder / VISIT DENVER / Visit Longmont** run the same Simpleview form
+  (fields `title`, `startdate`, `starttime`, `location`, `addr1`, `city`, `zip`,
+  `admission`, `email`, `linkurl`, `description`, `categories`, `primarycatId`,
+  `postname`, `postemail`). Values can be set with a page script. Visit Longmont adds
+  "Do you have permission to use this image?" — answer **Yes** for Ars Nova's own
+  artwork.
+- **What's Happenin'** (Boulder / Denver / Longmont editions, one form each) blocks
+  page scripts and screenshots — another extension's frame is in the way. Use `find`
+  for refs and `form_input` to fill. Check the city dropdown on every edition.
+- A script's printed output is blocked if it contains anything that looks like a URL
+  query or cookie. Print field names and short values, never the ticket URL.
+
+#### Image upload — the method that works
+
+Click the form's own upload button in Chrome, then type the file path into the Windows
+file picker with Desktop Commander:
+
+1. Put the listing image at an **ASCII-only path** (accented folder names like "Nicolò"
+   do not survive typed keystrokes), e.g.
+   `C:\Users\jonra\Claud Projects\Ars Nova\scratch\listing-images\<file>.jpg`.
+2. Start this PowerShell helper via Desktop Commander (`start_process`, shell
+   `powershell.exe`, short timeout so it keeps running in the background):
+
+   ```powershell
+   $ws = New-Object -ComObject WScript.Shell
+   $path = 'C:\Users\jonra\Claud Projects\Ars Nova\scratch\listing-images\<file>.jpg'
+   $ok = $false
+   for ($i = 0; $i -lt 20; $i++) { Start-Sleep -Milliseconds 500; if ($ws.AppActivate('Open')) { $ok = $true; break } }
+   if (-not $ok) { 'NO_DIALOG'; exit }
+   Start-Sleep -Milliseconds 600; $ws.SendKeys('%n')
+   Start-Sleep -Milliseconds 300; $ws.SendKeys($path)
+   Start-Sleep -Milliseconds 400; $ws.SendKeys('{ENTER}'); 'SENT'
+   ```
+
+3. Within 10 seconds, click the form's upload button (`computer` → `left_click` on the
+   button's ref). On the Simpleview forms that is the visible **"upload images"**
+   button — not the hidden `mediafile` input, which does not count.
+4. `read_process_output` should say `SENT`. Then confirm the file shows in the form's
+   upload list with status **Complete**.
+
+What does NOT work, so nobody re-tries it: the Chrome `file_upload` tool (rejects local
+paths); fetching the image from a local web server inside the page (Chrome's Local
+Network Access blocks it pending a user prompt); setting the hidden `mediafile` input
+by script. A script *can* fetch images from arsnovasingers.org (its uploads allow
+cross-origin reads), but only files already in the media library.
 
 ### email — draft, never send
 
@@ -171,6 +259,13 @@ next person re-litigates a decision that was already made.
 
 If the concert is inside three weeks, say plainly which outlets are already past their
 window instead of submitting into a closed door.
+
+## Outlet status notes — verified September 2026
+
+- **CPR Classical:** the old submit-event address now redirects to a directory page with
+  no submission form. Find the current route or mark `N/A — no public form`.
+- **Denver Life Magazine:** the extension's site prompt was declined on first visit;
+  needs Allow before the form can be reached.
 
 ## Verified corrections — do not undo these
 
