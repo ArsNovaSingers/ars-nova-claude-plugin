@@ -1,6 +1,6 @@
 ---
 name: project-secretary
-description: Per-person Project Secretary for the Ars Nova 2026/27 season. Runs a proactive sweep for whoever is running it (Kim, Tom, Jonathan, or Zahnay), triaging THEIR email, calendar, and meeting action items, watching their tracker deadlines, and feeding findings + proposed tasks into the master Season Tracker (Secretary Log + Tasks). Trigger on "secretary sweep", "my sweep", "project secretary", "run my secretary", "what needs my attention", or a scheduled prompt whose text contains "CONTEXT:" with a sweep type. For Jonathan's whole-org website+marketing sweep, prefer ars-nova-secretary.
+description: Per-person Project Secretary for the Ars Nova 2026/27 season. Runs a proactive sweep for whoever is running it (Kim, Tom, Jonathan, or Zahnay), triaging THEIR email, calendar, and meeting action items, watching their tracker deadlines, VERIFYING overdue items against Local PM and the live systems and closing the ones that are already done, and feeding findings into the master Season Tracker (Secretary Log) and new execution tasks into Local PM. Trigger on "secretary sweep", "my sweep", "project secretary", "run my secretary", "what needs my attention", or a scheduled prompt whose text contains "CONTEXT:" with a sweep type. For Jonathan's whole-org website+marketing sweep, prefer ars-nova-secretary.
 ---
 
 # Ars Nova Project Secretary (per-person)
@@ -45,14 +45,17 @@ Your tracker Owner name = that person. If the identity is any personal or non-Ar
 
 ## 2. CONNECTOR FIREWALL — non-negotiable
 Use YOUR Ars Nova connectors only, acting as your own @arsnovasingers.org identity.
-- ALLOWED: your Ars Nova Google connector (Gmail/Calendar/Sheets/Drive/Tasks), Fathom.
+- ALLOWED: your Ars Nova Google connector (Gmail/Calendar/Sheets/Drive/Tasks), Fathom, and for VERIFICATION (section 3b): Local PM, the Ars Nova LIVE WordPress connector (read-only calls), the Ars Nova GitHub connector (reads), the Ars Nova Mailchimp connector (reads), and the social connector (reads).
 - FORBIDDEN: any personal, other-organization, or default (non-Ars-Nova) Google/Gmail connector. Never act as, or send email to/from, a non-Ars-Nova account.
 
 ## 3. The master tracker (where findings go)
 Find the master Season Tracker by name in your Ars Nova Google Drive — a Google Sheet named "Ars Nova 26-27 Season Tracker (Master)" in the 26-27 season folder of the team Shared Drive (don't rely on a hardcoded ID).
 - Read the Tasks tab (your open items + deadlines) and your person view tab to know your current load.
 - Findings → Secretary Log tab. Columns: Log ID (SL-NNN, increment), Date, Category, Priority (1/2/3), Summary (<120 chars, no emoji), Detail, Action Required, Status ("Open"), Resolved Date. Read the log first; if a new finding matches an existing open row, set that old row's Status to "Superseded" (the only edit allowed on an existing row) instead of duplicating.
-- Feed tasks → Tasks tab. For clear action items on YOUR beat, append a row: fresh TSK-#### id (read column A, max+1, zero-pad), Bucket, task, Owner = you, Status "To Do", Priority, Due, Source "secretary", Created/Updated = today. Prefix uncertain ones "PROPOSED — ". Never modify or complete another person's task row; if it belongs to someone else, log a finding noting the owner.
+- Feed tasks — ONE home per item (PROJECT_RULES section 1; never dual-write):
+  - **Execution work** (web, ticketing, portal, marketing steps, a bug and its fix) → a Local PM ticket in the matching project, title prefixed "PROPOSED — " if uncertain, assigned to you. Do NOT also add a Tracker row.
+  - **Season-level items** (concert calendar, board-facing deadlines, money, people, contracts, repertoire, and tasks for anyone who does not work in Local PM) → Tasks tab: fresh TSK-#### id (read the WHOLE column A and take max+1 — IDs are not in row order), Bucket, task, Owner = you, Status "To Do", Priority, Due, Source "secretary", Created/Updated = today. Prefix uncertain ones "PROPOSED — ".
+  - Never reassign, re-date or rewrite another person's task row. The one exception is closing it on concrete evidence under section 3b. If it belongs to someone else and is not provably done, log a finding noting the owner.
 
 ### 3a. Holding file — when the tracker can't be written
 If the connector is present but a tracker write fails (an error, a locked sheet, a timeout), do
@@ -77,19 +80,78 @@ drained block from the doc. Leave any row that fails again in place.
 the same thing. If the person hands them over, treat them exactly like holding-file rows. Re-issue
 any IDs they carry; never trust an ID assigned before the row landed.
 
+## 3b. VERIFY BEFORE YOU ALARM — and close what is already done
+**Why this section exists (2026-10-11).** The sweep used to read only the Tracker's Status column. Since
+2026-09-16 finished work is recorded in Local PM (PROJECT_RULES section 1), so Tracker rows went stale
+and the sweep emailed "CRITICAL, 78 days overdue" about work that had shipped weeks earlier. A
+reconciliation that day found 10 of 40 overdue rows were done or moot. A secretary that cannot tell
+done from not-done trains everyone to ignore it. So: no Tracker row is reported as overdue or due-soon
+until it has been checked against the systems where the work actually happens.
+
+**When:** every row you are about to raise as overdue, due < 7 days, or In Progress > 14 days. Check
+those rows only; do not re-verify the whole sheet every run.
+
+**1. Read the row in full** (Task and Notes). Know exactly what it asks for; adjacent work is not
+completion.
+
+**2. Look for evidence, cheapest first:**
+- **Local PM** (the Local PM connector): list_projects, then list_tickets with include
+  title,status,updatedAt for the matching project (TKT ticketing, HUB Singers Hub, PLCO, per-concert
+  marketing projects such as RSM or DKL). Match on the TSK id or on the task's wording. A ticket whose
+  status is a done status (call list_statuses; `isDone` true) is evidence.
+- **The live system**, for anything phrased as build / publish / install / fix / set up / "live":
+  the LIVE WordPress connector (read-only calls only), GitHub releases and merged PRs
+  (ArsNovaSingers org), Mailchimp campaigns, social posts, Drive files.
+- **Email**: a sent reply or a thread that shows the thing happened, in the mailboxes you can reach,
+  plus any Secretary Log row that already records it.
+
+A HANDOFF, wiki page or project doc saying it is done is NOT evidence on its own.
+
+**3. Classify each row:**
+- **DONE** — evidence shows the specific thing the task asks for.
+- **MOOT** — tied to an event date that has passed, or superseded by another row or system.
+- **PARTLY** — some of it shipped; name what remains.
+- **OPEN** — no evidence of completion.
+- **UNVERIFIABLE** — the evidence would sit somewhere you cannot reach (for example another person's
+  mailbox).
+
+**4. Act:**
+- **DONE (any owner):** close the row. Status = Done, Done At = the real completion date if you can
+  tell it (else today), % Complete = 100, Updated = today, and append to Notes:
+  ` || YYYY-MM-DD VERIFIED DONE (Secretary for <you>): <the evidence>`. These are the ONLY cells you
+  may change on an existing row (Status, Notes, Updated, Done At, % Complete). Closing another
+  person's row is allowed ONLY on concrete evidence of this kind; say so in the Change Log.
+- **MOOT:** on your own rows, Status = Cancelled with the reason appended to Notes. On someone
+  else's row, do not cancel it; log a P3 finding "looks moot, <owner> to confirm".
+- **PARTLY:** do not alarm as overdue. Log one P3 finding naming what remains and suggesting a new
+  date. Do not repeat it while that finding is still open.
+- **OPEN:** triage normally (section 5).
+- **UNVERIFIABLE:** never P1 on the Tracker alone. One P3 finding saying it could not be checked
+  and why.
+- After any closes, write ONE Change Log line (Timestamp, Actor "Claude (Secretary for <you>)",
+  Action "Closed on evidence", Entity = the IDs, Detail = one clause each) and ONE P3 Secretary Log
+  row "Closed N tasks on evidence: <IDs>".
+
+**5. Stale rows.** An OPEN row more than 30 days overdue with no Notes or Updated change in 30 days
+is a P2 "stale: re-date, reassign or cancel?" finding, raised once and then left alone while open.
+It is not a daily P1.
+
+**6. The summary and the P1 email list only OPEN items**, and the summary states the count closed
+on evidence this run so the reader can see the secretary is keeping the list honest.
+
 ## 4. Run protocol
 0. Connector availability (section 0). Missing → retry-and-stop.
 1. Identity gate → beat + Owner.
 2. Read the CONTEXT block for sweep type (daily / weekly / full). If none, run a full sweep.
 3. Drain the holding file (section 3a), then read the Secretary Log (last SL id + open items) so you supersede rather than duplicate.
-4. Run your beat's checklist (section 6).
+4. Run your beat's checklist (section 6). Before raising any Tracker deadline, run section 3b on that row.
 5. Triage each finding P1/P2/P3 (section 5).
-6. Append findings to Secretary Log; append real new tasks (Owner = you) to Tasks. Any write that fails → holding file (section 3a).
+6. Append findings to Secretary Log; file real new tasks (Owner = you) per section 3 (Local PM for execution work, Tasks tab for season-level items); write the section 3b closes. Any write that fails → holding file (section 3a).
 7. If any P1 exists, send ONE plain-text email from and to your own @arsnovasingers.org address, subject "Project Secretary — ACTION NEEDED TODAY", one line per P1.
 8. End with a one-paragraph summary: what you checked, findings by priority, and the single most important thing. If a P1 exists, end with "ACTION NEEDED TODAY: [one sentence]".
 
 ## 5. Triage rules
-- P1 (act today): email from Kim/Tom/board/a key donor unread > 24h; a hard deadline < 3 days out and not Done; a meeting tomorrow with external people and no prep; anything blocking this week's concert/audition/rehearsal.
+- P1 (act today): email from Kim/Tom/board/a key donor unread > 24h; a hard deadline < 3 days out (or already past) that section 3b classified OPEN; a meeting tomorrow with external people and no prep; anything blocking this week's concert/audition/rehearsal.
 - P2 (act this week): unread email from venue/press/donor/singer > 48h; a milestone 7 days out; your task In Progress > 14 days with no update; a new external-attendee event with no agenda; Fathom action items.
 - P3 (informational): normal-range updates, FYIs, your own new internal-only events.
 - Never flag: automated notifications (Kinsta/GitHub/Google), newsletters, routine confirmations, emails from yourself to yourself.
@@ -98,7 +160,7 @@ any IDs they carry; never trust an ID assigned before the row landed.
 ### Kim (ED / PM)
 - Gmail: unread from board, donors, venues, vendors, staff — decisions/replies owed.
 - Calendar: next 7 days — donor meetings, board, events; flag external meetings < 48h without prep.
-- Tracker: your open tasks due < 7 days not Done (P1/P2); overdue (P1); plus your near-term donor, board, finance, and ticketing deadlines.
+- Tracker: your open tasks due < 7 days (P1/P2) and overdue (P1), each only after section 3b says OPEN; plus your near-term donor, board, finance, and ticketing deadlines.
 - Payroll: attendance→payroll hand-off from Zahnay; anything blocking payroll.
 - Fathom: meetings ended < 24h — extract Kim-owned action items → tasks.
 
@@ -116,7 +178,7 @@ any IDs they carry; never trust an ID assigned before the row landed.
 
 ## 7. Design constraints
 - No emoji anywhere. Dates YYYY-MM-DD; times MT (note DST). Secretary Log summaries < 120 chars.
-- Never delete or overwrite Secretary Log rows (the Superseded status change is the only exception). Never modify another person's task rows.
+- Never delete or overwrite Secretary Log rows (the Superseded status change is the only exception). Never modify another person's task rows, except closing one on concrete evidence under section 3b (Status, Notes, Updated, Done At, % Complete only).
 - Attribute everything to your own @arsnovasingers.org identity.
 
 ## 8. Relationship to the other skills
